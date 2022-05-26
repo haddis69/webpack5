@@ -6,8 +6,9 @@ module.exports = {
     output: {
         //打包到哪里去
         path: path.resolve(__dirname, "dist"),
-        //文件名
-        filename: "main.js"
+        //文件名,这里默认指的是js文件的出口，其它的需要自己去配置
+        filename: "static/js/main.js",// 将 js 文件输出到 static/js 目录中
+        clean: true // 自动将上次打包目录资源清空，这里和webpack4有所不同
     },
     //加载器
     module: {
@@ -33,6 +34,34 @@ module.exports = {
             {
                 test: /\.styl$/,
                 use: ["style-loader", "css-loader", "stylus-loader"],
+            },
+            {
+                test: /\.(png|jpe?g|gif|webp)$/,
+                type: "asset",
+                parser: {
+                    dataUrlCondition: {
+                        //转为base64的图片要求的最大的大小
+                        //优点：减少请求数量   缺点：体积变大
+                        maxSize: 10 * 1024
+                    }
+                },
+                generator: {
+                    // 将图片文件输出到 static/imgs 目录中
+                    // 将图片文件命名 [hash:8][ext][query]
+                    // [hash:8]: hash值取8位
+                    // [ext]: 使用之前的文件扩展名
+                    // [query]: 添加之前的query参数
+                    filename: "static/imgs/[hash:8][ext][query]",
+                }
+            },
+            {
+                //处理字体，音视频等其它资源
+                test: /\.(ttf|woff2?|mp4|mp3|avi)$/,
+                //这里指原封不动的输出
+                type: "asset/resource",
+                generator: {
+                  filename: "static/media/[hash:8][ext][query]",
+                },
             }
         ]
     },
