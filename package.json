@@ -18,6 +18,12 @@
   },
   "homepage": "https://github.com/haddis69/webpack5#readme",
   "devDependencies": {
+    "css-loader": "^6.7.1",
+    "less-loader": "^11.0.0",
+    "sass": "^1.52.1",
+    "sass-loader": "^13.0.0",
+    "style-loader": "^3.3.1",
+    "stylus-loader": "^7.0.0",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2"
   }
