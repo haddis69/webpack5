@@ -1,13 +1,17 @@
 const path = require('path')
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+// npx webpack serve --config ./config/webpack.dev.js    运行
+
+
 module.exports = {
     //入口
     entry: './src/main.js',
     //出口
     output: {
         //打包到哪里去
-        path: path.resolve(__dirname, "dist"),
+        path: path.resolve(__dirname, "../dist"),
         //文件名,这里默认指的是js文件的出口，其它的需要自己去配置
         filename: "static/js/main.js",// 将 js 文件输出到 static/js 目录中
         clean: true // 自动将上次打包目录资源清空，这里和webpack4有所不同
@@ -80,12 +84,12 @@ module.exports = {
             // 指定检查文件的根目录
             //把声明使用eslint写在plugins里，但是需要有eslint的配置，否则还会报错
             //配置文件名是固定的几种形式，一定要写在根目录中
-            context: path.resolve(__dirname, "src"),
+            context: path.resolve(__dirname, "../src"),
         }),
         new HtmlWebpackPlugin({
             // 以 public/index.html 为模板创建文件
             // 新的html文件有两个特点：1. 内容和源文件一致 2. 自动引入打包生成的js等资源
-            template: path.resolve(__dirname, "public/index.html"),
+            template: path.resolve(__dirname, "../public/index.html"),
         })
     ],
     // 开发服务器
