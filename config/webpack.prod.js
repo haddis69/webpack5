@@ -2,6 +2,7 @@ const path = require("path");
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 // npx webpack --config ./config/webpack.prod.js   运行
 module.exports = {
@@ -113,6 +114,8 @@ module.exports = {
       // 定义输出文件名和目录
       filename: "static/css/main.css",
     }),
+    // css压缩
+    new CssMinimizerPlugin()
   ],
   // devServer: {
   //   host: "localhost", // 启动服务器域名
