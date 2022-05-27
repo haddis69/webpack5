@@ -63,6 +63,12 @@ module.exports = {
                 generator: {
                     filename: "static/media/[hash:8][ext][query]",
                 },
+            },
+            {
+                test: /\.js$/,
+                exclude: /node_modules/, // 排除node_modules代码不编译
+                loader: "babel-loader"
+                //这里也可以直接写配置，但是写在babel.config.js会更加方便修改
             }
         ]
     },
