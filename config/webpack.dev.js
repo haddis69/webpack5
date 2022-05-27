@@ -19,61 +19,66 @@ module.exports = {
     //加载器
     module: {
         rules: [
-            //loader配置
             {
-                // 用来匹配 .css 结尾的文件
-                test: /\.css$/,
-                // use 数组里面 Loader 执行顺序是从右到左
-                //css-loader:将css文件引入到commonJs中
-                //style-loader：将css文件创建style标签插入到页面中
-                use: ["style-loader", "css-loader"],
-            },
-            {
-                test: /\.less$/,
-                //loader只能写一个，但use可以写多个
-                use: ["style-loader", "css-loader", "less-loader"],
-            },
-            {
-                test: /\.s[ac]ss$/,
-                use: ["style-loader", "css-loader", "sass-loader"],
-            },
-            {
-                test: /\.styl$/,
-                use: ["style-loader", "css-loader", "stylus-loader"],
-            },
-            {
-                test: /\.(png|jpe?g|gif|webp)$/,
-                type: "asset",
-                parser: {
-                    dataUrlCondition: {
-                        //转为base64的图片要求的最大的大小
-                        //优点：减少请求数量   缺点：体积变大
-                        maxSize: 10 * 1024
+                //加上oneOf后只匹配一个
+                oneOf: [
+                    //loader配置
+                    {
+                        // 用来匹配 .css 结尾的文件
+                        test: /\.css$/,
+                        // use 数组里面 Loader 执行顺序是从右到左
+                        //css-loader:将css文件引入到commonJs中
+                        //style-loader：将css文件创建style标签插入到页面中
+                        use: ["style-loader", "css-loader"],
+                    },
+                    {
+                        test: /\.less$/,
+                        //loader只能写一个，但use可以写多个
+                        use: ["style-loader", "css-loader", "less-loader"],
+                    },
+                    {
+                        test: /\.s[ac]ss$/,
+                        use: ["style-loader", "css-loader", "sass-loader"],
+                    },
+                    {
+                        test: /\.styl$/,
+                        use: ["style-loader", "css-loader", "stylus-loader"],
+                    },
+                    {
+                        test: /\.(png|jpe?g|gif|webp)$/,
+                        type: "asset",
+                        parser: {
+                            dataUrlCondition: {
+                                //转为base64的图片要求的最大的大小
+                                //优点：减少请求数量   缺点：体积变大
+                                maxSize: 10 * 1024
+                            }
+                        },
+                        generator: {
+                            // 将图片文件输出到 static/imgs 目录中
+                            // 将图片文件命名 [hash:8][ext][query]
+                            // [hash:8]: hash值取8位
+                            // [ext]: 使用之前的文件扩展名
+                            // [query]: 添加之前的query参数
+                            filename: "static/imgs/[hash:8][ext][query]",
+                        }
+                    },
+                    {
+                        //处理字体，音视频等其它资源
+                        test: /\.(ttf|woff2?|mp4|mp3|avi)$/,
+                        //这里指原封不动的输出
+                        type: "asset/resource",
+                        generator: {
+                            filename: "static/media/[hash:8][ext][query]",
+                        },
+                    },
+                    {
+                        test: /\.js$/,
+                        exclude: /node_modules/, // 排除node_modules代码不编译
+                        loader: "babel-loader"
+                        //这里也可以直接写配置，但是写在babel.config.js会更加方便修改
                     }
-                },
-                generator: {
-                    // 将图片文件输出到 static/imgs 目录中
-                    // 将图片文件命名 [hash:8][ext][query]
-                    // [hash:8]: hash值取8位
-                    // [ext]: 使用之前的文件扩展名
-                    // [query]: 添加之前的query参数
-                    filename: "static/imgs/[hash:8][ext][query]",
-                }
-            },
-            {
-                //处理字体，音视频等其它资源
-                test: /\.(ttf|woff2?|mp4|mp3|avi)$/,
-                //这里指原封不动的输出
-                type: "asset/resource",
-                generator: {
-                    filename: "static/media/[hash:8][ext][query]",
-                },
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/, // 排除node_modules代码不编译
-                loader: "babel-loader"
-                //这里也可以直接写配置，但是写在babel.config.js会更加方便修改
+                ]
             }
         ]
     },
@@ -97,7 +102,12 @@ module.exports = {
         host: "localhost", // 启动服务器域名
         port: "3000", // 启动服务器端口号
         open: true, // 是否自动打开浏览器
+        hot: true, // 开启HMR功能（只能用于开发环境，生产环境不需要了）
     },
     //模式
-    mode: 'development'
+    mode: 'development',
+    //优点：打包编译速度快，只包含行映射
+    //缺点：没有列映射
+    //开发模式代码符合规范，不压缩，不必非要关心列
+    devtool: "cheap-module-source-map"
 }

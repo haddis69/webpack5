@@ -15,88 +15,92 @@ module.exports = {
   module: {
     rules: [
       {
-        // 用来匹配 .css 结尾的文件
-        test: /\.css$/,
-        // use 数组里面 Loader 执行顺序是从右到左
-        use: [MiniCssExtractPlugin.loader, "css-loader", {
-          loader: "postcss-loader",
-          options: {
-            postcssOptions: {
-              plugins: [
-                "postcss-preset-env", // 能解决大多数样式兼容性问题
-              ],
+        oneOf: [
+          {
+            // 用来匹配 .css 结尾的文件
+            test: /\.css$/,
+            // use 数组里面 Loader 执行顺序是从右到左
+            use: [MiniCssExtractPlugin.loader, "css-loader", {
+              loader: "postcss-loader",
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    "postcss-preset-env", // 能解决大多数样式兼容性问题
+                  ],
+                },
+              },
+            },],
+          },
+          {
+            test: /\.less$/,
+            use: [MiniCssExtractPlugin.loader, "css-loader", {
+              loader: "postcss-loader",
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    "postcss-preset-env", // 能解决大多数样式兼容性问题
+                  ],
+                },
+              },
+            }, "less-loader"],
+          },
+          {
+            test: /\.s[ac]ss$/,
+            use: [MiniCssExtractPlugin.loader, "css-loader", {
+              loader: "postcss-loader",
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    "postcss-preset-env", // 能解决大多数样式兼容性问题
+                  ],
+                },
+              },
+            }, "sass-loader"],
+          },
+          {
+            test: /\.styl$/,
+            use: [MiniCssExtractPlugin.loader, "css-loader", {
+              loader: "postcss-loader",
+              options: {
+                postcssOptions: {
+                  plugins: [
+                    "postcss-preset-env", // 能解决大多数样式兼容性问题
+                  ],
+                },
+              },
+            }, "stylus-loader"],
+          },
+          {
+            test: /\.(png|jpe?g|gif|webp)$/,
+            type: "asset",
+            parser: {
+              dataUrlCondition: {
+                maxSize: 10 * 1024, // 小于10kb的图片会被base64处理
+              },
+            },
+            generator: {
+              // 将图片文件输出到 static/imgs 目录中
+              // 将图片文件命名 [hash:8][ext][query]
+              // [hash:8]: hash值取8位
+              // [ext]: 使用之前的文件扩展名
+              // [query]: 添加之前的query参数
+              filename: "static/imgs/[hash:8][ext][query]",
             },
           },
-        },],
-      },
-      {
-        test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", {
-          loader: "postcss-loader",
-          options: {
-            postcssOptions: {
-              plugins: [
-                "postcss-preset-env", // 能解决大多数样式兼容性问题
-              ],
+          {
+            test: /\.(ttf|woff2?)$/,
+            type: "asset/resource",
+            generator: {
+              filename: "static/media/[hash:8][ext][query]",
             },
           },
-        }, "less-loader"],
-      },
-      {
-        test: /\.s[ac]ss$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", {
-          loader: "postcss-loader",
-          options: {
-            postcssOptions: {
-              plugins: [
-                "postcss-preset-env", // 能解决大多数样式兼容性问题
-              ],
-            },
+          {
+            test: /\.js$/,
+            exclude: /node_modules/, // 排除node_modules代码不编译
+            loader: "babel-loader",
           },
-        }, "sass-loader"],
-      },
-      {
-        test: /\.styl$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", {
-          loader: "postcss-loader",
-          options: {
-            postcssOptions: {
-              plugins: [
-                "postcss-preset-env", // 能解决大多数样式兼容性问题
-              ],
-            },
-          },
-        }, "stylus-loader"],
-      },
-      {
-        test: /\.(png|jpe?g|gif|webp)$/,
-        type: "asset",
-        parser: {
-          dataUrlCondition: {
-            maxSize: 10 * 1024, // 小于10kb的图片会被base64处理
-          },
-        },
-        generator: {
-          // 将图片文件输出到 static/imgs 目录中
-          // 将图片文件命名 [hash:8][ext][query]
-          // [hash:8]: hash值取8位
-          // [ext]: 使用之前的文件扩展名
-          // [query]: 添加之前的query参数
-          filename: "static/imgs/[hash:8][ext][query]",
-        },
-      },
-      {
-        test: /\.(ttf|woff2?)$/,
-        type: "asset/resource",
-        generator: {
-          filename: "static/media/[hash:8][ext][query]",
-        },
-      },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/, // 排除node_modules代码不编译
-        loader: "babel-loader",
-      },
+        ]
+      }
     ],
   },
   plugins: [
@@ -123,4 +127,8 @@ module.exports = {
   //   open: true, // 是否自动打开浏览器
   // },
   mode: "production",
+  //优点：包含行/列映射
+  //缺点：打包编译速度更慢
+  //生产环境代码压缩，只有一行，所以必须关心列
+  devtool: "source-map"
 };
