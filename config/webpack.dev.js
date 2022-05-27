@@ -1,6 +1,10 @@
+const os = require("os");
 const path = require('path')
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+// cpu核数
+const threads = os.cpus().length;
 
 // npx webpack serve --config ./config/webpack.dev.js    运行
 
@@ -75,12 +79,20 @@ module.exports = {
                     {
                         test: /\.js$/,
                         exclude: /node_modules/, // 排除node_modules代码不编译
-                        loader: "babel-loader",
-                        //这里也可以直接写配置，但是写在babel.config.js会更加方便修改
-                        options: {
-                            cacheDirectory: true, // 开启babel编译缓存
-                            cacheCompression: false, // 缓存文件不要压缩
-                        }
+                        use: [
+                            {
+                                loader: "thread-loader", // 开启多进程
+                                options: {
+                                    workers: threads, // 数量
+                                },
+                            },
+                            {
+                                loader: "babel-loader",
+                                options: {
+                                    cacheDirectory: true, // 开启babel编译缓存
+                                },
+                            },
+                        ],
                     }
                 ]
             }
@@ -100,6 +112,7 @@ module.exports = {
                 __dirname,
                 "../node_modules/.cache/.eslintcache"
             ),
+            threads, // 开启多进程
         }),
         new HtmlWebpackPlugin({
             // 以 public/index.html 为模板创建文件

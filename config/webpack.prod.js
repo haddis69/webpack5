@@ -1,8 +1,13 @@
+// nodejs核心模块，直接使用
+const os = require("os");
 const path = require("path");
 const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+// cpu核数
+const threads = os.cpus().length;
 
 // npx webpack --config ./config/webpack.prod.js   运行
 module.exports = {
@@ -97,11 +102,20 @@ module.exports = {
           {
             test: /\.js$/,
             exclude: /node_modules/, // 排除node_modules代码不编译
-            loader: "babel-loader",
-            options: {
-              cacheDirectory: true, // 开启babel编译缓存
-              cacheCompression: false, // 缓存文件不要压缩
-            },
+            use: [
+              {
+                loader: "thread-loader", // 开启多进程
+                options: {
+                  workers: threads, // 数量
+                },
+              },
+              {
+                loader: "babel-loader",
+                options: {
+                  cacheDirectory: true, // 开启babel编译缓存
+                },
+              },
+            ],
           },
         ]
       }
@@ -117,6 +131,7 @@ module.exports = {
         __dirname,
         "../node_modules/.cache/.eslintcache"
       ),
+      threads, // 开启多进程
     }),
     new HtmlWebpackPlugin({
       // 以 public/index.html 为模板创建文件
@@ -128,9 +143,20 @@ module.exports = {
       // 定义输出文件名和目录
       filename: "static/css/main.css",
     }),
-    // css压缩
-    new CssMinimizerPlugin()
+    // css压缩,之后这行就可以注释了，把压缩方法写在一起，这也是官方推荐的写法
+    // new CssMinimizerPlugin()
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      // css压缩也可以写到optimization.minimizer里面，效果一样的
+      new CssMinimizerPlugin(),
+      // 当生产模式会默认开启TerserPlugin，但是我们需要进行其他配置，就要重新写了
+      new TerserPlugin({
+        parallel: threads // 开启多进程
+      })
+    ],
+  },
   // devServer: {
   //   host: "localhost", // 启动服务器域名
   //   port: "3000", // 启动服务器端口号
