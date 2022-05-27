@@ -1,4 +1,5 @@
 const path = require('path')
+const ESLintWebpackPlugin = require("eslint-webpack-plugin");
 module.exports = {
     //入口
     entry: './src/main.js',
@@ -60,7 +61,7 @@ module.exports = {
                 //这里指原封不动的输出
                 type: "asset/resource",
                 generator: {
-                  filename: "static/media/[hash:8][ext][query]",
+                    filename: "static/media/[hash:8][ext][query]",
                 },
             }
         ]
@@ -68,6 +69,12 @@ module.exports = {
     //插件
     plugins: [
         //插件的配置
+        new ESLintWebpackPlugin({
+            // 指定检查文件的根目录
+            //把声明使用eslint写在plugins里，但是需要有eslint的配置，否则还会报错
+            //配置文件名是固定的几种形式，一定要写在根目录中
+            context: path.resolve(__dirname, "src"),
+        }),
     ],
     //模式
     mode: 'development'
