@@ -90,6 +90,7 @@ module.exports = {
                                 loader: "babel-loader",
                                 options: {
                                     cacheDirectory: true, // 开启babel编译缓存
+                                    plugins: ["@babel/plugin-transform-runtime"], // 减少代码体积
                                 },
                             },
                         ],
