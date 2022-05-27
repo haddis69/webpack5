@@ -75,8 +75,12 @@ module.exports = {
                     {
                         test: /\.js$/,
                         exclude: /node_modules/, // 排除node_modules代码不编译
-                        loader: "babel-loader"
+                        loader: "babel-loader",
                         //这里也可以直接写配置，但是写在babel.config.js会更加方便修改
+                        options: {
+                            cacheDirectory: true, // 开启babel编译缓存
+                            cacheCompression: false, // 缓存文件不要压缩
+                        }
                     }
                 ]
             }
@@ -90,6 +94,12 @@ module.exports = {
             //把声明使用eslint写在plugins里，但是需要有eslint的配置，否则还会报错
             //配置文件名是固定的几种形式，一定要写在根目录中
             context: path.resolve(__dirname, "../src"),
+            cache: true, // 开启缓存
+            // 缓存目录
+            cacheLocation: path.resolve(
+                __dirname,
+                "../node_modules/.cache/.eslintcache"
+            ),
         }),
         new HtmlWebpackPlugin({
             // 以 public/index.html 为模板创建文件
